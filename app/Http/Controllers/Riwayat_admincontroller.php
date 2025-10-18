@@ -13,4 +13,11 @@ class Riwayat_admincontroller extends Controller
             'judul' => 'Riwayat Laporan',
         ]);
     }
+
+    public function show($id){
+        return view('admin.riwayat.detail', [
+            'judul' => 'Detail Laporan',
+            'id' => $id,
+        ]);
+    }
 }

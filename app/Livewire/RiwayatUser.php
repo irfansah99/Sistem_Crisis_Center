@@ -7,11 +7,14 @@ use App\Models\Report;
 use App\Models\Report_instansi;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class RiwayatUser extends Component
 {
+    use WithPagination;
     public $OpenDetail;
-
+    public $search;
+    
     public function OpenModal($reportid)
     {
         $this->OpenDetail = $reportid;
@@ -34,9 +37,18 @@ class RiwayatUser extends Component
         }
     
         $user = Auth::user();
-        $report = Report::where('user_id', $user->id)->where('status', 'done')
-            ->orderBy('updated_at', 'desc')
-            ->get();
+        if (!empty($this->search)) {
+            $report = Report::where('user_id', $user->id)
+                ->where('deskripsi', 'like', '%' . $this->search . '%')
+                ->where('status', 'done')
+                ->orderBy('updated_at', 'desc')
+                ->paginate(10);
+        } else {
+            $report = Report::where('user_id', $user->id)
+                ->where('status', 'done')
+                ->orderBy('updated_at', 'desc')
+                ->paginate(10);
+        }
         return view('livewire.riwayat-user', [
             'judul' => 'Home',
             'user' => $user,

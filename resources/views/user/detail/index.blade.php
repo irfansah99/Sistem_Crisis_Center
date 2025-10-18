@@ -1,49 +1,102 @@
 <x-layout>
     <x-slot:judul>{{ $judul }}</x-slot:judul>
 
-    <div class="max-w-3xl mx-auto bg-white shadow rounded-lg p-6 space-y-2">
-        <ul class="divide-y divide-gray-200">
-            <li class="py-2">Judul: {{ $index->judul }}</li>
-            <li class="py-2">Deskripsi: {{ $index->deskripsi }}</li>
-            <li class="py-2">Kategori: {{ $index->kategori }}</li>
-            <li class="py-2 ">Level Krisis: 
-                @if ($index->level_krisis === "rendah")
-                <span class="bg-blue-600 text-slate-800 rounded  px-1">{{ $index->level_krisis }}</span>
-                @elseif ($index->level_krisis === "sedang")
-                <span class="bg-blue-400 text-slate-800 rounded  px-1">{{ $index->level_krisis }}</span>
-                @elseif ($index->level_krisis === "tinggi")
-                <span class="bg-red-400 text-slate-800 rounded  px-1">{{ $index->level_krisis }}</span>
-                @elseif ($index->level_krisis === "darurat")
-                <span class="bg-red-700 text-slate-800 rounded  px-1">{{ $index->level_krisis }}</span>
+    <div class="max-w-3xl w-full mx-auto bg-white shadow-lg rounded-lg p-6 space-y-4 ">
+        <ul class="divide-y divide-gray-200 flex flex-col gap-4">
+            <li class="py-2 flex flex-col sm:flex-row sm:items-start gap-2">
+                <span class="font-semibold w-40">Deskripsi</span>
+                <div class="overflow-y-auto break-words whitespace-normal max-h-64 lg:max-w-[500px] text-justify">
+                    {{ $index->deskripsi }}
+                </div>
+
+            </li>
+            <li class="py-2 flex flex-col sm:flex-row sm:items-center gap-2">
+                <span class="font-semibold w-40">Kategori:</span>
+                <span>{{ $index->kategori }}</span>
+            </li>
+            <li class="py-2 flex flex-col sm:flex-row sm:items-center gap-2">
+                <span class="font-semibold w-40">Level Krisis</span>
+                @if ($index->level_krisis === 'rendah')
+                    <span class="bg-green-500 text-white rounded px-2">{{ $index->level_krisis }}</span>
+                @elseif ($index->level_krisis === 'sedang')
+                    <span class="bg-yellow-400 text-white rounded px-2">{{ $index->level_krisis }}</span>
+                @elseif ($index->level_krisis === 'tinggi')
+                    <span class="bg-red-500 text-white rounded px-2">{{ $index->level_krisis }}</span>
+                @elseif ($index->level_krisis === 'darurat')
+                    <span class="bg-black text-white rounded px-2">{{ $index->level_krisis }}</span>
                 @else
-                <span class="bg-yellow-300 rounded  px-1 text-slate-800">Belum Ditentukan</span>
+                    <span class="bg-yellow-300 text-white rounded px-2">Belum Ditentukan</span>
                 @endif
             </li>
-            <li class="py-2">Lokasi: {{ $index->lokasi }}</li>
-            <li class="py-2">
-                Bukti:
-                @if($index->foto)
+            <li class="py-2 flex flex-col sm:flex-row sm:items-start gap-2">
+                <span class="font-semibold w-40">Instansi yang dikerahkan</span>
+                <ul class=list-decimal space-y-1">
+                    @if ($instansi_terkait && count($instansi_terkait) > 0)
+                        @foreach ($instansi_terkait as $item)
+                            <li class="ml-5">{{ $item->nama_instansi }}</li>
+                        @endforeach
+                    @else
+                        <span class="text-gray-500 italic">Belum ada instansi terkait</span>
+                    @endif
+                </ul>
+            </li>
+            </li>
+            <li class="py-2 flex flex-col sm:flex-row sm:items-center gap-2">
+                <span class="font-semibold w-40">Lokasi</span>
+                <a href="{{ $index->lokasi }}" target="_blank" class="text-blue-500 hover:underline">Lihat
+                    Lokasi</a href="">
+            </li>
+
+            <li class="py-2 flex flex-col sm:flex-row sm:items-start gap-2">
+                <span class="font-semibold w-40">Bukti</span>
+                @if ($index->foto)
                     <img src="{{ asset('storage/' . $index->foto) }}" alt="Bukti" class="mt-2 w-48 rounded">
                 @else
                     <span class="text-gray-500">Tidak ada bukti</span>
                 @endif
             </li>
-            <li class="py-2">Catatan Admin: {{ $index->catatan_admin }}</li>
-            <li class="py-2">Status: 
-                <span class="px-2 py-1 rounded 
-                    {{ $index->status == 'disetujui' ? 'bg-green-100 text-green-700' : 
-                       ($index->status == 'ditolak' ? 'bg-red-100 text-red-700' : 
-                       'bg-yellow-100 text-yellow-700') }}">
-                    {{ ucfirst($index->status) }}
-                </span>
+
+            <li class="py-2 flex flex-col sm:flex-row sm:items-start gap-2">
+                <span class="font-semibold w-40">Catatan Admin</span>
+                <div class="overflow-auto max-h-64">
+                    {{ $index->catatan_admin ?? 'Belum ada catatan' }}
+                </div>
             </li>
-            <li class="py-2">Terakhir Diubah: {{ $index->updated_at->format('d M Y H:i') }}</li>
-            <li class="py-2">Dibuat Pada: {{ $index->created_at->format('d M Y H:i') }}</li>
+
+            <li class="py-2 flex flex-col sm:flex-row sm:items-center gap-2">
+                <span class="font-semibold w-40">Status</span>
+                @if ($index->status === 'pending')
+                    <span class="px-2 py-1 rounded text-slate-700 bg-slate-200">Menunggu</span>
+                @elseif ($index->status === 'reject')
+                    <span class="bg-red-500 text-white px-2 py-1 ">Laporan Ditolak</span>
+                @elseif ($index->status === 'verified')
+                    <span class="bg-blue-500 py-1 rounded text-white px-2">Laporan disetujui</span>
+                @elseif ($index->status === 'on_progres')
+                    <span class="bg-green-500 py-1 rounded text-white px-2">Diproses</span>
+                @endif
+
+            </li>
+
+            <li class="py-2
+                flex flex-col sm:flex-row sm:items-center gap-2">
+                <span class="font-semibold w-40">Terakhir Diubah:</span>
+                <span>{{ $index->updated_at->format('d M Y H:i') }}</span>
+            </li>
+
+            <li class="py-2 flex flex-col sm:flex-row sm:items-center gap-2">
+                <span class="font-semibold w-40">Dibuat Pada:</span>
+                <span>{{ $index->created_at->format('d M Y H:i') }}</span>
+            </li>
         </ul>
+
+        <div class="mt-4 flex justify-start">
+            <a href="{{ route('beranda.index') }}">
+                <button class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800">
+                    Back</button>
+            </a>
+
+        </div>
     </div>
-    <a href="{{ url()->previous() }}">
-        <button class="px-4 py-2 bg-gray-700 text-white rounded">Back</button>
-    </a>
-    
+
     <x-sweet-alert />
 </x-layout>

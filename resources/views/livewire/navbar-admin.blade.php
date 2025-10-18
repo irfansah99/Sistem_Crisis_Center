@@ -1,4 +1,4 @@
-<nav class="bg-gray-800" x-data="{ isOpen: false }">
+<nav class="bg-gray-800 sticky top-0 z-10" x-data="{ isOpen: false }">
 
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 items-center justify-between">
@@ -8,22 +8,13 @@
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="/instansi/dashboard"
-                            class="{{ request()->is('instansi/dashboard') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} rounded-md  px-3 py-2 text-sm font-medium ">Dashboard</a>
-                        <a href="/instansi/histories"
-                            class="{{ request()->is('instansi/histories') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} rounded-md  px-3 py-2 text-sm font-medium ">Riwayat</a>
-                        @can('akses-petugas')
-                            <a href="/kelola_penggunaan"
-                                class="{{ request()->is('kelola_penggunaan') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} rounded-md px-3 py-2 text-sm font-medium  hover:bg-gray-700 hover:text-white">Penggunaan</a>
-                        @endcan
-                        @can('akses-instansi')
-                            <a href="/kelola_tagihan"
-                                class="{{ request()->is('kelola_tagihan') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} rounded-md px-3 py-2 text-sm font-medium  hover:bg-gray-700 hover:text-white">Tagihan</a>
-                            <a href="/riwayat_pembayaran"
-                                class="{{ request()->is('riwayat_pembayaran') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} rounded-md px-3 py-2 text-sm font-medium  hover:bg-gray-700 hover:text-white">Riwayat</a>
-                            <a href="/user"
-                                class="{{ request()->is('user') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} rounded-md px-3 py-2 text-sm font-medium  hover:bg-gray-700 hover:text-white">User</a>
-                        @endcan
+                        <a href="/admin/dashboard"
+                            class="{{ request()->is('admin/dashboard') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} rounded-md  px-3 py-2 text-sm font-medium "  wire:navigate>Dashboard</a>
+                        <a href="/admin/reports"
+                            class="{{ request()->is('admin/reports') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} rounded-md  px-3 py-2 text-sm font-medium "  wire:navigate>Report</a>
+                        <a href="/admin/histories"
+                            class="{{ request()->is('admin/histories') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} rounded-md  px-3 py-2 text-sm font-medium "  wire:navigate >Histories</a>
+  
 
                     </div>
                 </div>
@@ -39,7 +30,7 @@
                     <!-- Profile dropdown -->
                     <div class="relative ml-3">
                         <div class="flex items-center">
-                            <h1 class="text-white mr-3">{{ auth('instansi')->user()->nama_instansi }}</h1>
+                            <h1 class="text-white mr-3">{{ auth('admin')->user()->name }}</h1>
                             <div>
                                 <button type="button" @click="isOpen = !isOpen"
                                     class="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden"
@@ -47,9 +38,9 @@
                                     <span class="absolute -inset-1.5"></span>
                                     <span class="sr-only">Open user menu</span>
 
-                                    @if (auth('instansi')->user()->image)
+                                    @if (auth('admin')->user()->image)
                                         <img class="size-8 rounded-full object-cover"
-                                            src="{{ asset('storage/' . auth('instansi')->user()->image) }}" alt="Profil">
+                                            src="{{ asset('storage/' . auth('admin')->user()->image) }}" alt="Profil">
                                     @else
                                         <img class="size-8 rounded-full object-cover"
                                             src="{{ url('image/nophoto.jpg') }}" alt="Profil Default">
@@ -69,8 +60,8 @@
                             role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button"
                             tabindex="-1">
                             <!-- Active: "bg-gray-100 outline-hidden", Not Active: "" -->
-                            <a href="{{ route('instansi.profil.edit')}}" class="block px-4 py-2 text-sm text-gray-700" role="menuitem"
-                                tabindex="-1" id="user-menu-item-0">Your Profile</a>
+                            <a  href="{{ route('admin.profil.edit')}}"  class="block px-4 py-2 text-sm text-gray-700" role="menuitem"
+                                tabindex="-1" id="user-menu-item-0" wire:navigate >Your Profile</a>
                             <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem"
                                 tabindex="-1" id="user-menu-item-2">
                                 <form action="/logout" method="POST">
@@ -80,7 +71,47 @@
                             </a>
                         </div>
                     </div>
-                    @livewire('notifikasi-instansi')
+                    <div x-data="{ OpenNotif: false }" class="relative">
+                        <button class="relative text-2xl hover:scale-110 transition-all delay-150" :class="{ 'scale-110': OpenNotif }"
+                            @click="OpenNotif = !OpenNotif">
+                            🔔
+                            @if ($countnotif > 0)
+                                <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1 ">
+                                    {{ $countnotif }}
+                                </span>
+                            @endif
+                        </button>
+
+                        <div x-show="OpenNotif" @click.outside="OpenNotif = false" x-cloak
+                            x-transition:enter="transition ease-out duration-100 transform"
+                            x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                            x-transition:leave="transition ease-in duration-75 transform"
+                            x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                            class="absolute right-0 z-50 mt-2 w-[16rem] bg-white rounded-lg shadow-lg ring-1 ring-black/5">
+                            <ul
+                                class="divide-y divide-gray-200 max-h-[70vh] min-h-[10vh] overflow-auto py-2 flex flex-col gap-2">
+                                @forelse($admin->unreadNotifications as $notif)
+                                    <li class="px-4 py-3 text-lg hover:bg-gray-100 flex flex-col cursor-pointer rounded transition-all delay-150 hover:translate-y-1"
+                                        wire:click="update('{{ $notif->id }}')">
+                                        <span class="text-blue-400">
+                                            {{ $notif->data['pesan'] }}
+                                        </span>
+                                        <span x-data class="text-xs text-gray-400"
+                                            x-text="dayjs('{{ $notif->created_at->timezone('Asia/Jakarta') }}').fromNow()"></span>
+                                    </li>
+                                @empty
+                                    <li class="px-4 py-2 text-sm text-gray-500 text-center">Tidak ada notifikasi</li>
+                                @endforelse
+                            </ul>
+
+                            <div class="flex justify-center p-2 border-t">
+                                <button wire:click="ClearAll"
+                                    class="border-slate-400 border hover:bg-slate-300 active:bg-slate-200 rounded px-2 py-1 text-sm">
+                                    Tandai Semua
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="-mr-2 flex md:hidden ov">
@@ -115,14 +146,12 @@
                 class="{{ request()->is('dashboard') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} block rounded-md px-3 py-2 text-sm font-medium">
                 Dashboard
             </a>
-            @can('akses-petugas')
-                <a href="/kelola_penggunaan"
-                    class="{{ request()->is('kelola_penggunaan') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} block rounded-md px-3 py-2 text-sm font-medium">
-                    Penggunaan
-                </a>
-            @endcan
-
-            @can('akses-instansi')
+            <a href="/riwayat_admin"
+                class="{{ request()->is('riwayat_admin') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} block rounded-md px-3 py-2 text-sm font-medium">
+                Riwayat
+            </a>
+            
+            @can('akses-admin')
                 <a href="/kelola_tagihan"
                     class="{{ request()->is('kelola_tagihan') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} block rounded-md px-3 py-2 text-sm font-medium">
                     Tagihan
@@ -149,7 +178,7 @@
 
                     <div class="ml-3">
                         <div class="text-base font-medium text-white">
-                            {{ auth('instansi')->user()->name ?? 'Nama Pengguna' }}
+                            {{ auth('admin')->user()->name ?? 'Nama Pengguna' }}
                         </div>
                     </div>
                 </div>
@@ -167,3 +196,31 @@
         </div>
     </div>
 </nav>
+
+<script src="https://js.pusher.com/8.0.1/pusher.min.js"></script>
+<script>
+    var pusher = new Pusher("hrc1og0mjabrrlcikvyw", {
+        cluster: "",
+        enabledTransports: ['ws'],
+        forceTLS: false,
+        wsHost: "127.0.0.1",
+        wsPort: "8080"
+    });
+
+    var createChannel = pusher.subscribe("reports");
+    var updateChannel = pusher.subscribe("instansi_update");
+
+
+
+    createChannel.bind("report.created", function(data) {
+        dispatchEvent(new CustomEvent('reportAdded', {
+            detail: data
+        }));
+    });
+
+    updateChannel.bind("instansi.updated", function(data) {
+        dispatchEvent(new CustomEvent('reportAdded', {
+            detail: data
+        }));
+    });
+</script>

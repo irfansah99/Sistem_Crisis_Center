@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Events\ReportCreated;
+use App\Models\Instansi;
 use App\Models\Report;
+use App\Models\Report_instansi;
 use App\Models\Tagihan;
 use App\Models\Tarif;
 use Illuminate\Http\Request;
@@ -66,9 +68,14 @@ class BerandaController extends Controller
     public function show(string $id)
     {
         $report = Report::findOrFail($id);
+        $instansi_terkait = Instansi::whereIn(
+            'id',
+            Report_instansi::where('report_id', $report->id)->pluck('instansi_id')
+        )->get();
         return view('user.detail.index' ,[
             'judul' => 'Detail  Laporan',
             'index'  => $report,
+            'instansi_terkait' => $instansi_terkait
         ]);
     }
     public function destroy(string $id)

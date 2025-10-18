@@ -1,5 +1,16 @@
-<div class="overflow-x-auto mt-20">
-    <table class="min-w-full border-2 border-gray-300 rounded-lg shadow-sm text-sm text-left table-auto">
+<div class="overflow-x-auto">
+    <div class="relative w-full max-w-sm">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <svg class="w-5 h-5 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
+                    d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+            </svg>
+        </div>
+        <input type="text" placeholder="Search..." wire:model.live="search"
+            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg   text-gray-800 placeholder-gray-400">
+    </div>
+    <table class="min-w-full border-2 border-gray-300 rounded-lg shadow-sm text-sm text-left table-auto  mt-10">
         <thead class="bg-gray-100">
             <tr>
                 <th class="px-4 py-2 border-2">No</th>
@@ -11,45 +22,71 @@
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-            @forelse ($reports as $row)
+            @forelse ($reports as $key => $row)
                 <tr wire:key="report-{{ $row->id }}">
-                    <td class="px-4 py-2 border-2">{{ $loop->iteration }}</td>
+                    <td class="px-4 py-2 border-2">{{  $reports->firstItem() + $key }}</td>
                     <td class="px-4 py-2 border-2">
                         {{ Str::limit($row->report->deskripsi, 50) }}
                     </td>
-                    <td class="px-4 py-2 border-2">
-                        @if ($row->report->level_krisis === 'rendah')
-                            <span
-                                class="bg-blue-600 text-slate-300 rounded  px-1">{{ $row->report->level_krisis }}</span>
-                        @elseif ($row->report->level_krisis === 'sedang')
-                            <span
-                                class="bg-blue-400 text-slate-300 rounded  px-1">{{ $row->report->level_krisis }}</span>
-                        @elseif ($row->report->level_krisis === 'tinggi')
-                            <span
-                                class="bg-red-400 text-slate-300 rounded  px-1">{{ $row->report->level_krisis }}</span>
-                        @elseif ($row->report->level_krisis === 'darurat')
-                            <span
-                                class="bg-red-700 text-slate-300 rounded  px-1">{{ $row->report->level_krisis }}</span>
-                        @else
-                            <span class="bg-yellow-300 rounded  px-1 text-slate-800">Belum Ditentukan</span>
-                        @endif
+                    <td class="px-4 py-2 border-2 flex justify-center items-center">
+                        @switch($row->report->level_krisis)
+                            @case('rendah')
+                                <span class="bg-green-500 text-white rounded px-2 py-1">Rendah</span>
+                            @break
+
+                            @case('sedang')
+                                <span class="bg-yellow-400 text-white rounded px-2 py-1">Sedang</span>
+                            @break
+
+                            @case('tinggi')
+                                <span class="bg-red-500 text-white rounded px-2 py-1">Tinggi</span>
+                            @break
+
+                            @case('darurat')
+                                <span class="bg-black text-white rounded px-2 py-1">Darurat</span>
+                            @break
+
+                            @default
+                                <span class="bg-yellow-300 text-white rounded px-2 py-1">Belum Ditentukan</span>
+                        @endswitch
+
+
                     </td>
                     <td class="px-4 py-2 border-2">{{ $row->updated_at->diffForHumans() }}</td>
                     <td class="px-4 py-2 border-2">
-                        @if ($row->status === 'selesai')
-                            <span class="px-2 py-1 text-xs rounded bg-green-100 text-green-700">Selesai</span>
-                        @elseif ($row->status === 'proses')
-                            <span class="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-700">Proses</span>
-                        @else
-                            <span
-                                class="px-2 py-1 text-xs rounded bg-gray-100 text-gray-700">{{ ucfirst($row->status) }}</span>
-                        @endif
+                        @switch($row->status)
+                            @case('sent')
+                                <span class="px-2 py-1 text-xs font-semibold rounded bg-blue-100 text-blue-700">
+                                    Dikirim
+                                </span>
+                            @break
+
+                            @case('received')
+                                <span class="px-2 py-1 text-xs font-semibold rounded bg-yellow-100 text-yellow-700">
+                                    Diterima
+                                </span>
+                            @break
+
+                            @case('on_progress')
+                                <span class="px-2 py-1 text-xs font-semibold rounded bg-orange-100 text-orange-700">
+                                    Pengerjaan
+                                </span>
+                            @break
+
+                            @default
+                                <span class="px-2 py-1 text-xs font-semibold rounded bg-green-100 text-green-700">
+                                    Selesai
+                                </span>
+                        @endswitch
                     </td>
                     <td class="px-4 py-2 border-2 text-center">
-                        <button type="button" wire:click="ModalDetail({{ $row->id }})"
+                        <a href="{{ route('instansi.histories.show', $row->id) }}">
+                            <button type="button" 
                             class="px-2 py-1 bg-yellow-500 hover:bg-yellow-700 text-white rounded">
                             Detail
                         </button>
+                        </a>
+
                     </td>
                 </tr>
             @empty
@@ -62,55 +99,6 @@
 
         </tbody>
     </table>
-
-
-    @if ($detail)
-        <div class=" fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-            <div class="max-w-3xl mx-auto bg-white shadow rounded-lg p-6 space-y-2">
-                <ul class="divide-y divide-gray-200">
-                    <li class="py-2">Pelapor: {{ $detail->report->user->name }}</li>
-                    <li class="py-2">Deskripsi: {{ $detail->report->deskripsi }}</li>
-                    <li class="py-2">Kategori: {{ $detail->report->kategori }}</li>
-                    <li class="py-2 ">Level Krisis:
-                        @if ($detail->report->level_krisis === 'rendah')
-                            <span
-                                class="bg-blue-600 text-slate-800 rounded  px-1">{{ $detail->report->level_krisis }}</span>
-                        @elseif ($detail->report->level_krisis === 'sedang')
-                            <span
-                                class="bg-blue-400 text-slate-800 rounded  px-1">{{ $detail->report->level_krisis }}</span>
-                        @elseif ($detail->report->level_krisis === 'tinggi')
-                            <span
-                                class="bg-red-400 text-slate-800 rounded  px-1">{{ $detail->report->level_krisis }}</span>
-                        @elseif ($detail->report->level_krisis === 'darurat')
-                            <span
-                                class="bg-red-700 text-slate-800 rounded  px-1">{{ $detail->report->level_krisis }}</span>
-                        @else
-                            <span class="bg-yellow-300 rounded  px-1 text-slate-800">Belum Ditentukan</span>
-                        @endif
-                    </li>
-                    <li class="py-2">Lokasi: {{ $detail->report->lokasi }}</li>
-                    <li class="py-2">Instansi yang dikerahkan :
-                        <ul class=" ml-5">
-                            @foreach ($instansi_terkait as $item)
-                                <li>{{ $loop->iteration }}. {{ $item->nama_instansi }}</li>
-                            @endforeach
-                        </ul>
-                    </li>
-
-                    <li class="py-2">Catatan Instansi:
-                        {{ $detail->catatan_intansi ? $detail->catatan_intansi : 'belum ada catatan' }}</li>
-                    <li class="py-2">Status:
-                        {{ $detail->status }}
-                    </li>
-                    <li class="py-2">Terakhir Diubah: {{ $detail->updated_at->format('d M Y H:i') }}</li>
-                </ul>
-                <button type="button" wire:click="closeModal"
-                    class="px-4 py-2 bg-gray-400 text-white rounded">Back</button>
-            </div>
-
-        </div>
-    @endif
-
-
+    {{ $reports->links() }}
 
 </div>

@@ -9,15 +9,17 @@ use App\Models\Report_instansi;
 use App\Notifications\InstansiUpdateLaporan;
 use Illuminate\Support\Facades\Notification;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class ReportInstansiList extends Component
 {
+    use WithPagination;
     protected $listeners = ['reportInstansiCreate' => 'handleNewReport'];
     public $selectedReport = null;
     public $OpenDetail = null;
     public $status;
     public $catatan_intansi;
-
+    public $search;
     public function openModal($reportId)
     {
         $report = Report_instansi::find($reportId);
@@ -85,13 +87,22 @@ class ReportInstansiList extends Component
 
             }
         }
-        
-        
-        return view('livewire.report-instansi-list', [
-            'reports' => Report_instansi::where('instansi_id', $instansi->id)
+        if (!empty($this->search)) {
+            $report = Report_instansi::where('instansi_id', $instansi->id)->whereHas('report', function ($query) {
+                $query->where('deskripsi', 'like', '%' . $this->search . '%');
+            })
+            ->whereNot('status', 'resolved')
+            ->orderBy('updated_at', 'desc')
+            ->paginate(10);
+        }else{
+            $report = Report_instansi::where('instansi_id', $instansi->id)
                 ->whereNot('status', 'resolved')
                 ->orderBy('updated_at', 'desc')
-                ->get(),
+                ->paginate(10);
+        }
+        
+        return view('livewire.report-instansi-list', [
+            'reports' => $report,
             'instansi' => $instansi,
             'detail' => $detail,
             'instansi_terkait' => $instansi_terkait,

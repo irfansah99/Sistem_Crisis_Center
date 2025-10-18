@@ -2,12 +2,11 @@
 
 namespace App\Livewire;
 
-use App\Models\Report;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
-class ProfilUser extends Component
+class NavbarUser extends Component
 {
     protected $listeners = ['notifikasiuser' => '$refresh'];
     public $showDropdown;
@@ -23,7 +22,7 @@ class ProfilUser extends Component
         $this->user->unreadNotifications()->update([
             'read_at' => Carbon::now(),
         ]);
-        $this->showDropdown = '';
+
     }
 
     public function update(string $id)
@@ -35,8 +34,7 @@ class ProfilUser extends Component
     public function render()
     {
         $countnotif = $this->user->unreadNotifications()->count();
-
-        return view('livewire.profil-user', [
+        return view('livewire.navbar-user', [
             'user'       => $this->user,
             'countnotif' => $countnotif,
         ]);

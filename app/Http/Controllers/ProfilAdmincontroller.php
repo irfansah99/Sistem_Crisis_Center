@@ -26,7 +26,7 @@ class ProfilAdmincontroller extends Controller
 
         $rules = [
             'name'     => 'required|min:5',
-            'email'    => 'required|email|unique:users,email,' . $id . ',id',
+            'email'    => 'required|email|unique:users,email,|unique:admins,email,|unique:instansi,email' . $id . ',id',
             'phone'    => 'required|digits_between:10,15',
             'password' => 'nullable|min:6|confirmed',
             'image'    => 'nullable|image|file|max:2048',

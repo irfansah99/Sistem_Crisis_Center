@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class ProfilController extends Controller
@@ -75,9 +76,10 @@ class ProfilController extends Controller
         ];
 
         $validatedData = $request->validate($rules);
+        $emailChanged = $validatedData['email'] !== $user->email;
 
         if ($request->filled('password')) {
-            $validatedData['password'] = bcrypt($request->password);
+            $validatedData['password'] = Hash::make($request->password);
         } else {
             unset($validatedData['password']);
         }
@@ -89,12 +91,31 @@ class ProfilController extends Controller
             $validatedData['image'] = $request->file('image')->store('user_images', 'public');
         }
 
+        // 🔹 Kalau email berubah → reset verifikasi dan kirim ulang OTP
+        if ($emailChanged) {
+            $validatedData['email_verified_at'] = null;
+            $user->update($validatedData);
+
+            // Simpan ID user ke session agar halaman verifikasi tahu siapa yang diverifikasi
+            session(['user_id_verif' => $user->id]);
+
+            // Panggil fungsi kirim ulang OTP dari RegisterController
+            app(RegisterController::class)->KirimUlang();
+
+            // Logout supaya tidak bisa akses halaman lain sebelum verifikasi
+            Auth::logout();
+
+            // Redirect ke halaman verifikasi email
+            return redirect()
+                ->route('verifikasi_email')
+                ->with('info', 'Kami telah mengirim kode OTP ke email baru kamu. Silakan verifikasi terlebih dahulu.');
+        }
+
+        // 🔹 Jika email tidak berubah → update biasa
         $user->update($validatedData);
 
         return redirect()->route('beranda.index')->with('success', 'Profil berhasil diperbarui!');
     }
-
-
     /**
      * Remove the specified resource from storage.
      */

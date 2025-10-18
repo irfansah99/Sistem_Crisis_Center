@@ -1,43 +1,72 @@
 @if (session('success'))
-<script>
-    Swal.fire({
-        icon: 'success',
-        title: 'Sukses!',
-        text: @json(session('success')),
-        showConfirmButton: false,
-        timer: 2000
-    });
-</script>
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Sukses!',
+            text: @json(session('success')),
+            showConfirmButton: false,
+            timer: 2000
+        });
+    </script>
 @endif
 
 @if (session('error'))
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: @json(session('error')),
+            showConfirmButton: false,
+            timer: 2000
+        });
+    </script>
+@endif
 <script>
-    Swal.fire({
-        icon: 'error',
-        title: 'Gagal!',
-        text: @json(session('error')),
-        showConfirmButton: false,
-        timer: 2000
+    window.addEventListener('sweet-alert', event => {
+        const detail = event.detail;
+
+        Swal.fire({
+            icon: detail.icon,
+            title: detail.title,
+            text: detail.text || '',
+            showConfirmButton: detail.showConfirmButton ?? false,
+            timer: detail.timer ?? 2000
+        });
     });
 </script>
 
+<script>
+    window.addEventListener('sweet-alert', event => {
+        const detail = event.detail;
 
-@endif
-<div>
-    <script>
-        window.addEventListener('sweet-alert', event => {
-            const detail = event.detail;
-
+        if (detail.type === 'confirm') {
             Swal.fire({
-                icon: detail.icon ,
-                title: detail.title ,
+                icon: detail.icon,
+                title: detail.title,
+                text: detail.text,
+                showCancelButton: true,
+                confirmButtonText: detail.confirmButtonText || 'Ya',
+                cancelButtonText: detail.cancelButtonText || 'Batal',
+            }).then((result) => {
+                if (result.isConfirmed && detail.jenis ==='deletereport' ) {
+                    Livewire.dispatch('deleteConfirmed');
+                }
+                if (result.isConfirmed && detail.jenis ==='perbaruiakun' ) {
+                    Livewire.dispatch('updateconfirm');
+                }
+            });
+        } else {
+            Swal.fire({
+                icon: detail.icon,
+                title: detail.title,
                 text: detail.text || '',
                 showConfirmButton: detail.showConfirmButton ?? false,
-                timer: detail.timer ?? 2000
+                timer: detail.timer ?? 1000
             });
-        });
-    </script>
-</div>
+        }
+    });
+</script>
+
 
 <script>
     function konfirmasiubah(id) {
@@ -110,6 +139,7 @@
             }
         });
     }
+
     function konfirmasiHapus(id) {
         Swal.fire({
             title: 'Yakin ingin menghapus?',
@@ -126,8 +156,4 @@
             }
         })
     }
-
-
-
 </script>
-

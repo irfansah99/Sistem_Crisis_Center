@@ -1,6 +1,6 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-4">
 
-    <a href="/admin">
+    <a href="/admin/kelola_admin" wire:navigate > 
       <div class="bg-white shadow rounded-lg flex h-[20vh] hover:scale-105 active:grayscale transition-transform duration-300">
         <div class="basis-1/3 bg-green-500 flex items-center justify-center text-white text-4xl rounded-l-lg">
           <i class="fas fa-user-shield"></i> 
@@ -13,7 +13,7 @@
     </a>
 
 
-    <a href="/admin/reports">
+    <a href="/admin/reports" wire:navigate >
       <div class="bg-white shadow rounded-lg flex h-[20vh] hover:scale-105 active:grayscale transition-transform duration-300">
         <div class="basis-1/3 bg-blue-500 flex items-center justify-center text-white text-4xl rounded-l-lg">
           <i class="fas fa-file-alt"></i> {{-- laporan --}}
@@ -26,7 +26,7 @@
     </a>
 
 
-    <a href="/admin/histories">
+    <a href="/admin/histories" wire:navigate >
       <div class="bg-white shadow rounded-lg flex h-[20vh] hover:scale-105 active:grayscale transition-transform duration-300">
         <div class="basis-1/3 bg-purple-500 flex items-center justify-center text-white text-4xl rounded-l-lg">
           <i class="fas fa-history"></i> 
@@ -39,7 +39,7 @@
     </a>
 
 
-    <a href="/instansi">
+    <a href="/admin/kelola_instansi" wire:navigate >
       <div class="bg-white shadow rounded-lg flex h-[20vh] hover:scale-105 active:grayscale transition-transform duration-300">
         <div class="basis-1/3 bg-teal-500 flex items-center justify-center text-white text-4xl rounded-l-lg">
           <i class="fas fa-building"></i> 

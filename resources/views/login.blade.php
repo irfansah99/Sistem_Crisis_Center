@@ -12,11 +12,11 @@
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     </head>
     <body >
-        <div class="relative flex justify-center items-center min-h-screen w-full before:content-[''] before:absolute before:inset-0 before:bg-[url('https://utara.jakarta.go.id/portal/pages/1724290355_e73629dee7544639c88f.jpeg')] before:bg-cover before:bg-no-repeat before:blur-sm before:z-0">
+        <div class="relative flex justify-center items-center min-h-screen w-full before:content-[''] before:absolute before:inset-0 before:bg-[url('https://asset.kompas.com/crops/jZavvc2_23rHDJzJUzILa3WMBlE=/0x0:0x0/750x500/data/photo/2024/10/27/671d7d4fe0d8d.jpg')] before:bg-cover before:bg-no-repeat before:blur-sm before:z-0">
             <form action="/login" method="POST" class="relative z-10 space-y-5 bg-white/70 backdrop-blur-md shadow-lg rounded-xl p-6 w-full max-w-sm">
                 @csrf
                 <img src="image/logo.png" alt="logo" class="w-24 mx-auto my-3">
-                <h1 class="text-2xl font-semibold text-gray-700 text-center">Aplikasi Crisis Center</h1>
+                <h1 class="text-2xl font-semibold text-gray-700 text-center">Sistem Pelaporan Cepat dan Penanganan Insiden</h1>
                 @if (session('loginerror'))
                 <div class="bg-red-100 text-red-800 px-4 py-2 rounded mb-4">
                     {{ session('loginerror') }}
@@ -50,7 +50,7 @@
         
                 <input class="block bg-blue-500 text-white px-4 py-2 rounded mx-auto hover:bg-indigo-500 transition transform hover:-translate-y-1 hover:scale-105 active:bg-red-600" type="submit" value="Log in">
 
-                <div class="text-center mt-4 text-sm">
+                <div class="mt-4 text-sm">
                     Belum punya akun? 
                     <a href="/register" class="text-blue-500 hover:underline">Daftar</a>
                 </div>

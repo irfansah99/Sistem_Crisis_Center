@@ -17,6 +17,9 @@ class Instansi extends Authenticatable
         'email',
         'alamat',
         'password',
+        'email_verified_at',
+        'otp',
+        'otp_expires_at'
     ];
 
     protected $primaryKey = 'id';

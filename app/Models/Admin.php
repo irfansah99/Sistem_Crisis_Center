@@ -19,6 +19,9 @@ class Admin extends Authenticatable
         'image',
         'phone',
         'role',
+        'email_verified_at',
+        'otp',
+        'otp_expires_at'
     ];
 
     protected $hidden = ['password'];

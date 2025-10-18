@@ -8,7 +8,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Report;
 use App\Notifications\UserCreateLaporan;
-
+use App\Rules\Maps;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 
@@ -16,7 +16,7 @@ class CreateReport extends Component
 {
     use WithFileUploads;
 
-    public $judul, $deskripsi, $kategori, $lokasi, $foto;
+    public $judul, $deskripsi, $kategori, $lokasi, $foto ,$otp;
 
     public function render()
     {
@@ -28,10 +28,9 @@ class CreateReport extends Component
         $user = Auth::user();
 
         $rules = [
-            'judul'     => 'required|min:5',
             'deskripsi' => 'required|min:10',
             'kategori'  => 'required|in:Bencana Alam,Kebakaran,Kriminalitas,Kecelakaan',
-            'lokasi'    => 'required',
+            'lokasi'    => ['required', new Maps],
             'foto'      => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ];
         

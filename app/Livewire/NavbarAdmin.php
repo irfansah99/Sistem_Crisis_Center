@@ -3,10 +3,9 @@
 namespace App\Livewire;
 
 use Carbon\Carbon;
-use Illuminate\Foundation\Exceptions\Renderer\Listener;
 use Livewire\Component;
 
-class NotifikasiAdmin extends Component
+class NavbarAdmin extends Component
 {
     protected $listeners = ['reportAdded','$refresh'];
     public $showDropdown;
@@ -31,7 +30,7 @@ class NotifikasiAdmin extends Component
     public function render()
     {
         $countnotif = $this->admin->unreadNotifications()->count();
-        return view('livewire.notifikasi-admin', [
+        return view('livewire.navbar-admin', [
             'admin'       => $this->admin,
             'countnotif' => $countnotif,
         ]);

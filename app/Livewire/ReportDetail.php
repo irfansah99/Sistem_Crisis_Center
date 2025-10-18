@@ -22,6 +22,9 @@ class ReportDetail extends Component
     public $level_krisis;
     public $status;
     public $instansi = [];
+    public $DetailInstansi = false;
+    public $id_Report_instansi;
+    public $filter;
 
     public $catatan_admin;
     public function mount(string $id)
@@ -48,7 +51,7 @@ class ReportDetail extends Component
                 'status'        => 'required|in:verified,reject',
                 'catatan_admin' => 'nullable|string',
                 'level_krisis'  => 'required|in:rendah,tinggi,sedang,darurat',
-                'instansi'      => 'required|array',
+                'instansi'      => 'nullable|array',
                 'instansi.*'    => 'exists:instansi,id',
             ]);
 
@@ -102,20 +105,37 @@ class ReportDetail extends Component
 
         $this->openModal = '';
     }
+
+
+    public function OpenDetail($id){
+        $this->DetailInstansi = true;
+        $this->id_Report_instansi = $id;
+    }
+
+
     public function closeModal(){
         $this->openModal = '';
     }
+
+    public function closeDetail(){
+        $this->DetailInstansi = false;
+    }
+
     public function render()
     {
         $instansi_terkait = Report_instansi::where('report_id', $this->id)->pluck('instansi_id');
         $report = Report::with('user')->findOrFail($this->id);
-
+        $detail_instansi = null;
+        if ($this->id_Report_instansi) {
+            $detail_instansi = Report_instansi::findOrFail($this->id_Report_instansi);
+        }
         return view('livewire.report-detail', [
             'judul' => 'Detail Laporan',
             'index' => $report,
             'instansi' => Instansi::all(),
             'instansi_terkait' => Report_instansi::where('report_id', $this->id)->get(),
-            'tambah_instansi' => Instansi::whereNotIn('id', $instansi_terkait)->get(),
+            'tambah_instansi' => Instansi::whereNotIn('id', $instansi_terkait)->where('jenis', $this->filter)->get(),
+            'detail_instansi' => $detail_instansi,
         ]);
     }
 }

@@ -4,24 +4,7 @@
         wire:submit.prevent="simpan"
         enctype="multipart/form-data"
     >
-        @csrf
 
-        <!-- Judul -->
-        <div class="flex flex-col">
-            <label for="judul">Judul Laporan</label>
-            <input
-                type="text"
-                id="judul"
-                wire:model="judul"
-                class="border-2 rounded bg-slate-200 p-1 text-slate-700"
-                placeholder="Masukkan judul laporan"
-            >
-        </div>
-        @error('judul') 
-            <span class="text-red-600 text-sm">{{ $message }}</span>
-        @enderror 
-
-        <!-- Deskripsi -->
         <div class="flex flex-col">
             <label for="deskripsi">Deskripsi</label>
             <textarea
@@ -52,7 +35,7 @@
 
         <!-- Lokasi -->
         <div class="flex flex-col">
-            <label for="lokasi">Lokasi Kejadian</label>
+            <label for="lokasi">Lokasi Kejadian (Pastikan Menggunakan Google Maps)</label>
             <input
                 type="text"
                 id="lokasi"
@@ -86,13 +69,7 @@
 
         <!-- Button -->
         <div class="text-center mt-4 flex gap-2 justify-center mx-auto">
-            <button 
-                type="submit"
-                class="bg-blue-500 w-min p-2 text-white px-4 py-2 rounded hover:scale-105 hover:bg-indigo-500 duration-300"
-            >
-                Kirim
-            </button>
-            <a href="{{ route('beranda.index') }}">
+            <a href="{{ route('beranda.index') }}" wire:navigate>
                 <button 
                     type="button" 
                     class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 transition"
@@ -100,6 +77,13 @@
                     Batal
                 </button>
             </a>
+            <button 
+                type="submit"
+                class="bg-blue-500 w-min p-2 text-white px-4 py-2 rounded hover:scale-105 hover:bg-indigo-500 duration-300 active:bg-blue-700 active:scale-100"
+            >
+                Kirim
+            </button>
+
         </div>
     </form>
 </div>
