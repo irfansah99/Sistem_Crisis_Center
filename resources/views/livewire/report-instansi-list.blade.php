@@ -24,7 +24,7 @@
         <tbody class="divide-y divide-gray-200">
             @forelse ($reports as $key => $row)
                 <tr wire:key="report-{{ $row->id }}">
-                    <td class="px-4 py-2 border-2">{{  $reports->firstItem() + $key }}</td>
+                    <td class="px-4 py-2 border-2">{{ $reports->firstItem() + $key }}</td>
                     <td class="px-4 py-2 border-2">
                         {{ Str::limit($row->report->deskripsi, 50) }}
                     </td>
@@ -91,7 +91,7 @@
                             class="px-2 py-1 bg-blue-500 hover:bg-blue-700 text-white rounded">
                             Update
                         </button>
-                        
+
                     </td>
                 </tr>
                 @empty
@@ -105,41 +105,50 @@
             </tbody>
         </table>
         {{ $reports->links() }}
-        <div
-            class="{{ $selectedReport ? '' : 'hidden' }} fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-            <div class="bg-white p-6 rounded shadow-lg lg:w-[50%] lg:h-[65%] w-[70%] h-[80%]">
-                <h2 class="text-lg font-semibold mb-4">Update Laporan</h2>
 
-                <form wire:submit.prevent="updateReport" class="flex flex-col">
-                    <label>Status:</label>
-                    <select wire:model="status" class="w-full border rounded p-2 mb-3">
-                        <option value="sent"
-                            {{ in_array($status, ['received', 'on_progress', 'resolved']) ? 'disabled' : '' }}>
-                            Dikirim
-                        </option>
-                        <option value="received" {{ in_array($status, ['on_progress', 'resolved']) ? 'disabled' : '' }}>
-                            Terima
-                        </option>
-                        <option value="on_progress" {{ $status === 'resolved' ? 'disabled' : '' }}>Proses</option>
-                        <option value="resolved">Selesai</option>
-                    </select>
+        @if ($selectedReport)
+            <div class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                <div class="bg-white p-6 rounded shadow-lg lg:w-[50%] lg:h-[65%] w-[70%] h-[80%]">
+                    <h2 class="text-lg font-semibold mb-4">Update Laporan</h2>
 
+                    <form wire:submit.prevent="updateReport" class="flex flex-col gap-5">
+                        <div>
+                            <label>Status:</label>
+                            <select wire:model="status" class="w-full border rounded p-2 mb-3">
+                                <option value="sent"
+                                    {{ in_array($status, ['received', 'on_progress', 'resolved']) ? 'disabled' : '' }}>
+                                    Dikirim
+                                </option>
+                                <option value="received"
+                                    {{ in_array($status, ['on_progress', 'resolved']) ? 'disabled' : '' }}>
+                                    Terima
+                                </option>
+                                <option value="on_progress" {{ $status === 'resolved' ? 'disabled' : '' }}>Proses</option>
+                                <option value="resolved">Selesai</option>
+                            </select>
+                            @error('status')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
 
+                        <div>
+                            <label>Catatan Admin:</label>
+                            <textarea wire:model="catatan_intansi" class="w-full h-24 border border-gray-300 rounded px-3 py-2 resize-none"></textarea>
+                            @error('catatan_intansi')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                        </div>
 
-                    <label>Catatan Admin:</label>
-                    <textarea wire:model="catatan_intansi" class="w-full h-[60%] border rounded p-2 mb-3"></textarea>
-
-
-
-
-                    <div class="flex justify-end gap-2">
-                        <button type="button" wire:click="closeModal"
-                            class="px-4 py-2 bg-gray-400 text-white rounded">Batal</button>
-                        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded">Simpan</button>
-                    </div>
-                </form>
+                        <div class="flex justify-end gap-2">
+                            <button type="button" wire:click="closeModal"
+                                class="px-4 py-2 bg-gray-400 text-white rounded">Batal</button>
+                            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded">Simpan</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
+        @endif
+
 
     </div>
     <script src="https://js.pusher.com/8.0.1/pusher.min.js"></script>

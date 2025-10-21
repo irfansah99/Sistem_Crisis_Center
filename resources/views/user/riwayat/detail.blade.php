@@ -65,7 +65,11 @@
 
             <li class="py-2 flex flex-col sm:flex-row sm:items-center gap-2">
                 <span class="font-semibold w-40">Status</span>
-                <span class="bg-green-500 py-1 rounded text-white px-2">Selesai</span>
+                @if ($index->status === 'done')
+                    <span class="bg-green-500 py-1 rounded text-white px-2">Selesai</span>
+                @else
+                    <span class="bg-red-500 py-1 rounded text-white px-2">Ditolak</span>
+                @endif
 
 
             </li>

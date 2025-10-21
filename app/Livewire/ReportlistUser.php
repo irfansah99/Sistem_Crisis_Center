@@ -41,7 +41,7 @@ class ReportlistUser extends Component
             text: 'Data ini tidak bisa dikembalikan!',
             confirmButtonText: 'Ya, hapus!',
             cancelButtonText: 'Batal',
-            jenis: 'deletereport', 
+            jenis: 'deletereport',
             id: $id
         );
     }
@@ -81,16 +81,16 @@ class ReportlistUser extends Component
         if (!empty($this->search)) {
             $report = Report::where('user_id', $user->id)
                 ->where('deskripsi', 'like', '%' . $this->search . '%')
-                ->whereNot('status', 'done')
+                ->whereNotin('status', ['done', 'reject'])
                 ->orderBy('updated_at', 'desc')
                 ->paginate(10);
         } else {
             $report = Report::where('user_id', $user->id)
-                ->whereNot('status', 'done')
+            ->whereNotin('status', ['done', 'reject'])
                 ->orderBy('updated_at', 'desc')
                 ->paginate(10);
         }
-        
+
 
         return view('livewire.reportlist-user', [
             'judul' => 'Home',

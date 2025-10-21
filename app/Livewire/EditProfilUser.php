@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+
 class EditProfilUser extends Component
 {
     use WithFileUploads;
@@ -19,7 +20,7 @@ class EditProfilUser extends Component
     public $OpenVerifikasi = false;
     public $Openkirimulang = false;
     public $otp;
-    public $oldImagePath; 
+    public $oldImagePath;
     public function mount()
     {
         $id = Auth::user()->id;
@@ -28,7 +29,7 @@ class EditProfilUser extends Component
         $this->email = $user->email;
         $this->phone = $user->phone;
         $this->address = $user->address;
-        $this->oldImagePath = $user->image; 
+        $this->oldImagePath = $user->image;
 
         if (session('user_id_verif')) {
             $this->OpenVerifikasi = true;
@@ -36,68 +37,68 @@ class EditProfilUser extends Component
     }
 
 
-        public function update()
-        {
-            $id = Auth::user()->id;
-            $user = User::findOrFail($id);
+    public function update()
+    {
+        $id = Auth::user()->id;
+        $user = User::findOrFail($id);
 
-            $rules = [
-                'name'     => 'required|min:5',
-                'email'    => [
-                    'required',
-                    'email',
-                    Rule::unique('users', 'email')->ignore($id),
-                    Rule::unique('admins', 'email'),
-                    Rule::unique('instansi', 'email'),
-                ],
-                'phone'    => 'required|digits_between:10,15',
-                'address'  => 'required',
-                'password' => 'nullable|min:6|confirmed',
-                'image'    => 'nullable|image|file|max:2048',
-            ];
+        $rules = [
+            'name'     => 'required|min:5',
+            'email'    => [
+                'required',
+                'email',
+                Rule::unique('users', 'email')->ignore($id),
+                Rule::unique('admins', 'email'),
+                Rule::unique('instansi', 'email'),
+            ],
+            'phone'    => 'required|digits_between:10,15',
+            'address'  => 'required',
+            'password' => 'nullable|min:6|confirmed',
+            'image'    => 'nullable|image|file|max:2048',
+        ];
 
-            $validatedData = $this->validate($rules);
-            $emailChanged = $validatedData['email'] !== $user->email;
+        $validatedData = $this->validate($rules);
+        $emailChanged = $validatedData['email'] !== $user->email;
 
-            if (!empty($this->password)) {
-                $validatedData['password'] = Hash::make($this->password);
-            } else {
-                unset($validatedData['password']);
-            }
-    
-
-            if ($this->image instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile) {
-                if (!empty($user->image)) {
-                    Storage::disk('public')->delete($user->image);
-                }
-            
-                $validatedData['image'] = $this->image->store('user_images', 'public');
-            } else {
-                unset($validatedData['image']);
-            }
-            
-            if ($emailChanged) {
-                $otp = rand(100000, 999999);
-                $expiresAt = now()->addMinutes(5);
-
-                $user->update([
-                    'otp' => Hash::make($otp),
-                    'otp_expires_at' => $expiresAt,
-                    'email_verified_at' => null,
-                    'email' => $this->email,
-                ]);
-
-
-                $user->notify(new EmailUserVerivied($otp));
-
-                session(['user_id_verif' => $user->id]);
-
-                return $this->OpenVerifikasi = true;
-            }
-
-            $user->update($validatedData);
-            return redirect()->route('beranda.index')->with('success', 'Profil berhasil diperbarui!');
+        if (!empty($this->password)) {
+            $validatedData['password'] = Hash::make($this->password);
+        } else {
+            unset($validatedData['password']);
         }
+
+
+        if ($this->image instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile) {
+            if (!empty($user->image)) {
+                Storage::disk('public')->delete($user->image);
+            }
+
+            $validatedData['image'] = $this->image->store('user_images', 'public');
+        } else {
+            unset($validatedData['image']);
+        }
+
+        if ($emailChanged) {
+            $otp = rand(100000, 999999);
+            $expiresAt = now()->addMinutes(5);
+
+            $user->update([
+                'otp' => Hash::make($otp),
+                'otp_expires_at' => $expiresAt,
+                'email_verified_at' => null,
+                'email' => $this->email,
+            ]);
+
+
+            $user->notify(new EmailUserVerivied($otp));
+
+            session(['user_id_verif' => $user->id]);
+
+            return $this->OpenVerifikasi = true;
+        }
+
+        $user->update($validatedData);
+        return redirect()->route('beranda.index')->with('success', 'Profil berhasil diperbarui!');
+    }
     public function verifikasi()
     {
         $this->validate([
@@ -158,7 +159,7 @@ class EditProfilUser extends Component
     {
         $id = Auth::user()->id;
         return view('livewire.edit-profil-user', [
-            'edit'=> User::findOrFail($id)
+            'edit' => User::findOrFail($id)
         ]);
     }
 }

@@ -40,12 +40,12 @@ class RiwayatUser extends Component
         if (!empty($this->search)) {
             $report = Report::where('user_id', $user->id)
                 ->where('deskripsi', 'like', '%' . $this->search . '%')
-                ->where('status', 'done')
+                ->whereIn('status', ['done', 'reject'])
                 ->orderBy('updated_at', 'desc')
                 ->paginate(10);
         } else {
             $report = Report::where('user_id', $user->id)
-                ->where('status', 'done')
+            ->whereIn('status', ['done', 'reject'])
                 ->orderBy('updated_at', 'desc')
                 ->paginate(10);
         }

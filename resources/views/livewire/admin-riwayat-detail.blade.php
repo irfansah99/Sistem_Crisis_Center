@@ -26,9 +26,11 @@
                         @endif
                     </p>
                     <p><span class="font-semibold">Status:</span>
-                        <span class="px-2 py-1 rounded text-sm bg-green-500 text-white">
-                            Selesai
-                        </span>
+                        @if ($detail->status === 'done')
+                            <span class="bg-green-500 py-1 rounded text-white px-2">Selesai</span>
+                        @else
+                            <span class="bg-red-500 py-1 rounded text-white px-2">Ditolak</span>
+                        @endif
                     </p>
                 </div>
             </div>

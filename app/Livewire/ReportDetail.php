@@ -47,27 +47,38 @@ class ReportDetail extends Component
         $oldData = $report->getOriginal();
 
         if ($report->status === 'pending') {
-            $validated = $this->validate([
-                'status'        => 'required|in:verified,reject',
-                'catatan_admin' => 'nullable|string',
-                'level_krisis'  => 'required|in:rendah,tinggi,sedang,darurat',
-                'instansi'      => 'nullable|array',
-                'instansi.*'    => 'exists:instansi,id',
-            ]);
-
-            $report->update($validated);
-
-            foreach ($this->instansi as $instansiId) {
-                $instansiId = (int) $instansiId; 
-                $reportInstansi = Report_instansi::firstOrCreate(
-                    ['report_id' => $report->id, 'instansi_id' => $instansiId],
-                    ['admin_id'  => $admin]
-                );
-
-                $instansi = Instansi::find($instansiId);
-                Notification::send($instansi, new ReportInstansiCreate($reportInstansi));
-                event(new ReportInstansiList($reportInstansi));
+            if ($this->status !== 'reject') {
+                $validated = $this->validate([
+                    'status'        => 'required|in:verified,reject',
+                    'catatan_admin' => 'nullable|string',
+                    'level_krisis'  => 'required|in:rendah,tinggi,sedang,darurat',
+                    'instansi'      => 'required|array',
+                    'instansi.*'    => 'exists:instansi,id',
+                ]);
+    
+                $report->update($validated);
+    
+                foreach ($this->instansi as $instansiId) {
+                    $instansiId = (int) $instansiId; 
+                    $reportInstansi = Report_instansi::firstOrCreate(
+                        ['report_id' => $report->id, 'instansi_id' => $instansiId],
+                        ['admin_id'  => $admin]
+                    );
+    
+                    $instansi = Instansi::find($instansiId);
+                    Notification::send($instansi, new ReportInstansiCreate($reportInstansi));
+                    event(new ReportInstansiList($reportInstansi));
+                }
+            }else{
+                $validated = $this->validate([
+                    'status'        => 'required|in:verified,reject',
+                    'catatan_admin' => 'nullable|string',
+                    'level_krisis'  => 'nullable|in:rendah,tinggi,sedang,darurat',
+                ]);
+    
+                $report->update($validated);
             }
+
         } else {
             $validated = $this->validate([
                 'status'        => 'nullable|in:verified,on_progres,done',

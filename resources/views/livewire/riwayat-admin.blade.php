@@ -29,15 +29,19 @@
                     <td class="px-4 py-2 border-2">{{ $row->user->name }}</td>
                     <td class="px-4 py-2 border-2">{{ \Illuminate\Support\Str::limit($row->deskripsi, 20, '...') }}</td>
                     <td class="px-4 py-2 border-2">{{ $row->kategori }}</td>
-                    <td class="px-4 py-2 border-2"> <span
-                            class="bg-green-500 py-1 rounded text-white px-2">Selesai</span></td>
+                    <td class="px-4 py-2 border-2">
+                        @if ($row->status === 'done')
+                            <span class="bg-green-500 py-1 rounded text-white px-2">Selesai</span>
+                        @else
+                            <span class="bg-red-500 py-1 rounded text-white px-2">Ditolak</span>
+                        @endif
                     <td class="px-4 py-2 border-2">{{ $row->updated_at->diffForHumans() }}</td>
                     <td class="px-4 py-2 border-2 text-center">
                         <a href="{{ route('admin.histories.show', $row->id) }}" wire:navigate>
                             <button class="px-2 py-1 bg-yellow-500 hover:bg-yellow-700 text-white rounded">
                                 Detail
                             </button>
-                        </a>                        
+                        </a>
 
                     </td>
                 </tr>

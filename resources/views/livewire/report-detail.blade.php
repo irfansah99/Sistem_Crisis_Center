@@ -190,6 +190,9 @@
                                     <span class="text-gray-500">Tidak ada Instansi</span>
                                 @endforelse
                             </div>
+                            @error('instansi')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
                         </div>
 
                         <div class="flex flex-col">

@@ -14,14 +14,12 @@ class Reportlist extends Component
     public function render()
     {
         if (!empty($this->search)) {
-            $report = Report::
-                where('deskripsi', 'like', '%' . $this->search . '%')
-                ->whereNot('status', 'done')
+            $report = Report::where('deskripsi', 'like', '%' . $this->search . '%')
+                ->whereNotin('status', ['done', 'reject'])
                 ->orderBy('updated_at', 'desc')
                 ->paginate(10);
         } else {
-            $report = Report::
-                whereNot('status', 'done')
+            $report = Report::whereNotin('status', ['done', 'reject'])
                 ->orderBy('updated_at', 'desc')
                 ->paginate(10);
         }

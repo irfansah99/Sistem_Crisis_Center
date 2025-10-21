@@ -19,30 +19,29 @@ class RiwayatAdmin extends Component
     {
         $this->OpenDetail = $reportid;
     }
-    public function CloseModal(){
-        $this->OpenDetail= null;
+    public function CloseModal()
+    {
+        $this->OpenDetail = null;
     }
     public function render()
     {
         $report_detail = null;
         $instansi_terkait = null;
         if ($this->OpenDetail) {
-            $instansi_terkait = Report_instansi::where('report_id', $this->OpenDetail)->orderBy('created_at' ,'asc')->get();
+            $instansi_terkait = Report_instansi::where('report_id', $this->OpenDetail)->orderBy('created_at', 'asc')->get();
             $report_detail = Report::with('user')->findOrFail($this->OpenDetail);
         }
         if (!empty($this->search)) {
-            $report = Report::
-                where('deskripsi', 'like', '%' . $this->search . '%')
-                ->where('status', 'done')
+            $report = Report::where('deskripsi', 'like', '%' . $this->search . '%')
+            ->whereIn('status', ['done', 'reject'])
                 ->orderBy('updated_at', 'desc')
                 ->paginate(10);
         } else {
-            $report = Report::
-                where('status', 'done')
+            $report = Report::whereIn('status', ['done', 'reject'])
                 ->orderBy('updated_at', 'desc')
                 ->paginate(10);
         }
-        return view('livewire.riwayat-admin',[
+        return view('livewire.riwayat-admin', [
             'reports' => $report,
             'detail' => $report_detail,
             'instansi_terkait' => $instansi_terkait
