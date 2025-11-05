@@ -25,7 +25,7 @@
         <tbody class="divide-y divide-gray-200">
             @forelse ($reports as $key => $row)
                 <tr>
-                    <td class="px-4 py-2 border-2">{{  $reports->firstItem() + $key }}</td>
+                    <td class="px-4 py-2 border-2">{{ $reports->firstItem() + $key }}</td>
                     <td class="px-4 py-2 border-2">{{ $row->user->name }}</td>
                     <td class="px-4 py-2 border-2">{{ \Illuminate\Support\Str::limit($row->deskripsi, 20, '...') }}</td>
                     <td class="px-4 py-2 border-2">{{ $row->kategori }}</td>

@@ -19,6 +19,7 @@ use App\Http\Controllers\Riwayat_admincontroller;
 use App\Http\Controllers\Riwayatcontroller;
 use App\Http\Controllers\RiwayatinstansiController;
 use App\Http\Middleware\AdminEmailVerified;
+use App\Http\Middleware\AdminRole;
 use App\Http\Middleware\InstasiEmailVerified;
 use App\Http\Middleware\SudahLogin;
 use App\Http\Middleware\VerifikasiEmail;
@@ -65,6 +66,9 @@ Route::middleware(['auth:admin', AdminEmailVerified::class])->as('admin.')->pref
     Route::resource('reports', ReportsController::class);
     Route::resource('kelola_admin', KelolaAdminController::class);
     Route::resource('kelola_instansi', KelolaInstansiController::class);
+});
+Route::middleware(['auth:admin', AdminRole::class])->as('admin.')->prefix('admin')->group(function () {
+    Route::resource('kelola_admin', KelolaAdminController::class);
 });
 
 Route::middleware(['auth:instansi'])->prefix('instansi')->as('instansi.')->group(function () {
